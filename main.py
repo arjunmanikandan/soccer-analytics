@@ -16,32 +16,33 @@ def get_csv_from_url(drive_link):
 def display_result(winner):
     print(tabulate(winner,headers=["HOME-TEAM","AWAY-TEAM","SCORE","WINNER"],tablefmt="grid"))
 
-def display_wins(teams,header1):
+def display_wins(teams):
     result = dict(Counter(teams))
     matches_won = [[team,wins] for team,wins in result.items()]
-    print(tabulate(matches_won,headers=[header1,"MATCHES_WON"],tablefmt="grid"))
+    print(tabulate(matches_won,headers=["TEAM","MATCHES_WON"],tablefmt="grid"))
 
 def home_team_results(results):
     home_team_wins = []
     for item in results:
         if item[0] == item[3]:
             home_team_wins.append(item[0])
-    display_wins(home_team_wins,header1="HOME_TEAM")
+    return home_team_wins
 
 def away_team_results(results):
     away_team_wins = []
     for item in results:
         if item[1] == item[3]:
             away_team_wins.append(item[1])
-    display_wins(away_team_wins,header1="AWAY_TEAM")
+    return away_team_wins
 
 def calc_win_loss_draw(result,match):
     if result[0] > result[1]:
-        match.extend([match[0]])
+        result = [match[0]]
     elif result[1] > result[0]:
-        match.extend([match[1]])
+        result = [match[1]]
     else:
-        match.extend(["DRAW"])
+        result = ["DRAW"]
+    match.extend(result)
     return match
 
 def get_match_data():
@@ -53,6 +54,9 @@ def get_match_data():
         result = [int(row) for row in score.split("–")]
         results.append(calc_win_loss_draw(result,matches[i]))
     display_result(results)
-    home_team_results(results)
-    away_team_results(results)
+    result1 = home_team_results(results)
+    result2 = away_team_results(results)
+    result1.extend(result2)
+    display_wins(result1)
+
 get_match_data()
