@@ -13,27 +13,17 @@ def get_csv_from_url(drive_link):
     final_list = [row for row in table]
     return final_list
 
-def display_result(winner):
-    print(tabulate(winner,headers=["HOME-TEAM","AWAY-TEAM","SCORE","WINNER"],tablefmt="grid"))
+def display_match_winners_table(winners):
+    print(tabulate(winners,headers=["HOME-TEAM","AWAY-TEAM","SCORE","WINNER"],tablefmt="grid"))
+    winners.insert(0,["HOME-TEAM","AWAY-TEAM","SCORE","WINNER"])
+    return winners
 
-def display_wins(teams):
+def display_matches_won(teams):
     result = dict(Counter(teams))
     matches_won = [[team,wins] for team,wins in result.items()]
     print(tabulate(matches_won,headers=["TEAM","MATCHES_WON"],tablefmt="grid"))
-
-def home_team_results(results):
-    home_team_wins = []
-    for item in results:
-        if item[0] == item[3]:
-            home_team_wins.append(item[0])
-    return home_team_wins
-
-def away_team_results(results):
-    away_team_wins = []
-    for item in results:
-        if item[1] == item[3]:
-            away_team_wins.append(item[1])
-    return away_team_wins
+    matches_won.insert(0,["TEAM","MATCHES_WON"])
+    return matches_won
 
 def calc_win_loss_draw(result,match):
     if result[0] > result[1]:
@@ -45,6 +35,11 @@ def calc_win_loss_draw(result,match):
     match.extend(result)
     return match
 
+def output_to_csv_file(final_result,num):
+    with open(f"Soccer_Analytics/match_results{num}.csv","w",newline="\n") as file:
+        writer = csv.writer(file)
+        writer.writerows(final_result)
+
 def get_match_data():
     url = "https://drive.google.com/file/d/1thhBK4uFRw_3FguVYMw5y8HNDWesG10D/view?usp=sharing"
     match_data,results = get_csv_from_url(url),[]
@@ -53,10 +48,12 @@ def get_match_data():
         _,_,score = matches[i]
         result = [int(row) for row in score.split("–")]
         results.append(calc_win_loss_draw(result,matches[i]))
-    display_result(results)
-    result1 = home_team_results(results)
-    result2 = away_team_results(results)
-    result1.extend(result2)
-    display_wins(result1)
-
+    winning_teams = list(filter(lambda team: team[3]!="DRAW",results))
+    final_result = [team[3] for team in winning_teams]
+    match_winners = display_match_winners_table(results)
+    matches_won = display_matches_won(final_result)
+    num = 1
+    for matches_list in match_winners,matches_won:
+        output_to_csv_file(matches_list,num)
+        num+=1
 get_match_data()
