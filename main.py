@@ -1,5 +1,6 @@
 import sys
 import csv
+import json
 from tabulate import tabulate
 from collections import Counter
 
@@ -43,16 +44,24 @@ def display_output(winners,teams):
     print(tabulate(winners,tablefmt="grid"))
     print(tabulate(teams,tablefmt="grid"))
 
-def write_output(match_winners,matches_won,output_csv1,output_csv2):
-    output_to_csv_file(output_csv1,match_winners)
-    output_to_csv_file(output_csv2,matches_won)
+def write_output(match_winners,matches_won,file_path1,file_path2):
+    output_to_csv_file(file_path1,match_winners)
+    output_to_csv_file(file_path2,matches_won)
+
+def get_json(json_input):
+    with open(f"{json_input}.json","r") as file:
+        paths = json.load(file)
+    return paths
 
 def main():
     cli_input = sys.argv
-    input_csv,csv_output1,csv_output2= cli_input[1],cli_input[2],cli_input[3]
-    match_data = get_input(input_csv)
-    match_winners,matches_won=process_input(match_data)
+    json_input=cli_input[1]
+    file_paths = get_json(json_input)
+    MatchData = get_input(file_paths["input_csv_path"])
+    match_winners,matches_won=process_input(MatchData)
     display_output(match_winners,matches_won)
-    write_output(match_winners,matches_won,csv_output1,csv_output2)
+    write_output(match_winners,matches_won,
+    file_paths["output_csv_path_MatchWinners"],
+    file_paths["output_csv_path_MatchesWon"])
 main()
 
