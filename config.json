@@ -1,5 +1,5 @@
 {
-    "input_csv_path":"MatchData",
-    "output_csv_path_MatchWinners":"match_winners",
-    "output_csv_path_MatchesWon":"matches_won"
+    "input_csv_path":"./MatchData.csv",
+    "output_csv_path_MatchWinners":"./match_winners.csv",
+    "output_csv_path_MatchesWon":"./matches_won.csv"
 }

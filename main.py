@@ -5,7 +5,7 @@ from tabulate import tabulate
 from collections import Counter
 
 def get_input(csv_file):
-    with open(f"{csv_file}.csv","r",encoding='utf8') as file:
+    with open(f"{csv_file}","r",encoding='utf8') as file:
         table = csv.reader(file)    
         final_list = [row for row in table]
     return final_list
@@ -21,7 +21,7 @@ def calc_win_loss_draw(result,match):
     return match
 
 def output_to_csv_file(file_name,final_result):
-    with open(f"{file_name}.csv","w",newline="\n") as file:
+    with open(f"{file_name}","w",newline="\n") as file:
         writer = csv.writer(file)
         writer.writerows(final_result)
 
@@ -49,7 +49,7 @@ def write_output(match_winners,matches_won,file_path1,file_path2):
     output_to_csv_file(file_path2,matches_won)
 
 def get_json(json_input):
-    with open(f"{json_input}.json","r") as file:
+    with open(f"{json_input}","r") as file:
         paths = json.load(file)
     return paths
 
