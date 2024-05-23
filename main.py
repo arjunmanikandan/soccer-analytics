@@ -4,7 +4,7 @@ import json
 from tabulate import tabulate
 from collections import Counter
 
-def get_input(csv_file):
+def read_input(csv_file):
     with open(f"{csv_file}","r",encoding='utf8') as file:
         table = csv.reader(file)    
         final_list = [row for row in table]
@@ -53,21 +53,21 @@ def process_input(matches):
     matches_won.insert(0,["TEAM","MATCHES_WON"])
     return match_winners,matches_won
 
-def get_json(json_input):
+def read_config(json_input):
     with open(f"{json_input}","r") as file:
         paths = json.load(file)
     return paths
 
 def main():
     cli_input = sys.argv
-    json_input=cli_input[1]
+    config_path=cli_input[1]
     try:
         action_to_perform = cli_input[2]
     except Exception as e:
         action_to_perform=""
-    file_paths = get_json(json_input)
-    MatchData = get_input(file_paths["input_csv_path"])
-    match_winners,matches_won=process_input(MatchData)
+    file_paths = read_config(config_path)
+    match_data = read_input(file_paths["input_csv_path"])
+    match_winners,matches_won=process_input(match_data)
     display_write_output(match_winners,matches_won,action_to_perform)
-main()
 
+main()
