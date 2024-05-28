@@ -62,11 +62,9 @@ def read_config(json_input):
 
 def main():
     cli_input = sys.argv
-    os.environ["config_path"] = "config.json"
-    config_path=os.environ.get("config_path")
-    action_on_file = cli_input[1]
+    config_path = os.getenv("config_file")
     try:
-        action_to_perform = cli_input[2]
+        action_to_perform = cli_input[1]
     except Exception as e:
         action_to_perform=""
     action_on_file=config_path
