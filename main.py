@@ -2,16 +2,16 @@ import sys
 import csv
 import json
 import os
+import pandas as pd
 from tabulate import tabulate
 from collections import Counter
 
-
+#Read csv file using pandas
 def read_input(csv_file):
-    with open(f"{csv_file}","r",encoding='utf8') as file:
-        table = csv.reader(file)    
-        final_list = [row for row in table]
-    return final_list
+    df = pd.read_csv(csv_file)
+    return df
 
+#Calc win,loss,draw between teams
 def calc_win_loss_draw(result,match):
     if result[0] > result[1]:
         result = [match[0]]
@@ -42,14 +42,21 @@ def display_write_output(winners,teams,action):
 
 def process_input(matches):
     match_winners=[]
-    matches = [[row[3],row[4],row[7]] for row in matches]
-    for i in range(1,len(matches)):
+    home_teams = matches.loc[:, 'home_team'].tolist()
+    away_teams = matches.loc[:, 'away_team'].tolist()
+    scores = matches.loc[:, 'score'].tolist()
+    matches = list(zip(home_teams,away_teams,scores))
+    matches = [[row[0],row[1],row[2]] for row in matches]
+    for i in range(0,len(matches)):
         _,_,score = matches[i]
         result = [int(row) for row in score.split("–")]
         match_winners.append(calc_win_loss_draw(result,matches[i]))
+    #Exclude teams which has Draw
     winning_teams = list(filter(lambda team: team[3]!="DRAW",match_winners))
     teams = [team[3] for team in winning_teams]
+    #Count the occurrences of teams for wins
     result = dict(Counter(teams))
+    #Extract each team and it's number of wins
     matches_won = [[team,wins] for team,wins in result.items()]
     match_winners.insert(0,["HOME-TEAM","AWAY-TEAM","SCORE","WINNER"])
     matches_won.insert(0,["TEAM","MATCHES_WON"])
@@ -62,15 +69,16 @@ def read_config(json_input):
 
 def main():
     cli_input = sys.argv
+    #Get value from environment variable
     config_path = os.getenv("config_file")
+    #Process according to user input either match_winners or matches_won or none
     try:
         action_to_perform = cli_input[1]
     except Exception as e:
         action_to_perform=""
-    action_on_file=config_path
-    file_paths = read_config(action_on_file)
+    file_paths = read_config(config_path)
     match_data = read_input(file_paths["input_csv_path"])
     match_winners,matches_won=process_input(match_data)
     display_write_output(match_winners,matches_won,action_to_perform)
-
+    
 main()
